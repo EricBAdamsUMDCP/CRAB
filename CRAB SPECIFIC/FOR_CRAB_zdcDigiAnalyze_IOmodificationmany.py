@@ -6,7 +6,6 @@ import FWCore.ParameterSet.Config as cms
 #ADDED line 3
 import FWCore.PythonUtilities.LumiList as LumiList
 #note json file must be in same folder at config file
-from CRABClient.UserUtilities import config
 from Configuration.StandardSequences.Eras import eras
 
 process = cms.Process("Demo",eras.Run2_2018_pp_on_AA)
@@ -36,7 +35,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
-
+config.Data.inputDataset = '/HIMinimumBias2/AOD/PromptReco-v1/AOD' #I hope this is right //added 5/13
 
 process.TFileService = cms.Service("TFileService",fileName=cms.string("AOD_zdc_digi_tree_326776_CRAB.root"))
 
