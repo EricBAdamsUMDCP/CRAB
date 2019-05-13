@@ -10,6 +10,9 @@ from Configuration.StandardSequences.Eras import eras
 
 from CRABClient.UserUtilities import config
 
+from WMCore.Configuration import Configuration
+config = Configuration()
+
 process = cms.Process("Demo",eras.Run2_2018_pp_on_AA)
 
 process.load('Configuration.StandardSequences.Services_cff')
@@ -36,8 +39,8 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
-
-config.Data.inputDataset = '/HIMinimumBias2/HIRun2018A-PromptReco-v1/AOD'   #'/HIMinimumBias2/AOD/PromptReco-v1/AOD' #I hope this is right //added 5/13
+config.section_('Data') # added 5/13 EA note the things like Data and such are just for organiziation and mean nothing this is why I have to add a section its cern people doing bad organization
+config.Data.inputDataset = '/HIMinimumBias2/HIRun2018A-PromptReco-v1/AOD'#'/HIMinimumBias2/HIRun2018A-PromptReco-v1/AOD'   #'/HIMinimumBias2/AOD/PromptReco-v1/AOD' #I hope this is right //added 5/13
 
 process.TFileService = cms.Service("TFileService",fileName=cms.string("AOD_zdc_digi_tree_326776_CRAB.root"))
 
