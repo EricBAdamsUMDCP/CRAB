@@ -134,17 +134,13 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     int* trigflag;
     int* prscflag;
     //HLTPrescaleProvider hltPrescaleProvider;
-
-    std::vector<double>* phi;
-    std::vector<double>* eta;
-    std::vector<double>* Pt;
 };
 
 newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
   hltPrescaleProvider(iConfig, consumesCollector(), *this)*/{
-
+  
   usesResource("TFileService");
-  zdcToken = consumes<QIE10DigiCollection>(iConfig.getParameter<edm::InputTag>("zdc")); //creates token that uses resource "zdc" from input parameter(?)
+  zdcToken = consumes<QIE10DigiCollection>(iConfig.getParameter<edm::InputTag>("zdc"));
   caloTowerToken = consumes<CaloTowerCollection>(iConfig.getParameter<edm::InputTag>("tower"));
   hltToken = consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("hltresults"));
   trgResultsProcess_ = iConfig.getParameter<edm::InputTag>("hltresults").process();
@@ -152,10 +148,6 @@ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
 
   trackToken = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("track"));
   //pixelToken = consumes<SiPixelRecHitCollection>(iConfig.getParameter<edm::InputTag>("pixel"));
-
-  phi = nullptr;
-  eta = nullptr;
-  Pt = nullptr;
 }
 
 
@@ -177,7 +169,7 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   // Processing ZDC QIE10 digis
   edm::Handle<QIE10DigiCollection> zdcDigiCollection;
-  iEvent.getByToken(zdcToken, zdcDigiCollection); //gets resource from zdcToken and stores its data in zdcDigiCollection
+  iEvent.getByToken(zdcToken, zdcDigiCollection);
 
   //edm::ESHandle<HcalDbService> conditions;
   //iSetup.get<HcalDbRecord>().get(conditions);
@@ -264,7 +256,7 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
         nHF_pos++;
         eHF_pos += it->energy();
       }
-      else {
+      else{
         nHF_neg++;
         eHF_neg += it->energy();    
       }
@@ -277,27 +269,12 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   nTrack = trackCollection->size();
 
-
-  //// extract phi, eta, and Pt values from tracks ////
-  //clear track vectors
-  delete phi; phi = new std::vector<double>();
-  delete eta; eta = new std::vector<double>();
-  delete Pt; Pt = new std::vector<double>();
-
-  //populate track vectors
-  for (reco::TrackCollection::const_iterator track_iter = trackCollection->begin();
-                          track_iter != trackCollection->end(); ++track_iter) {
-    phi->push_back(track_iter->phi());
-    eta->push_back(track_iter->eta());
-    Pt->push_back(track_iter->pt());
-  }  
-
   // Processing pixels
   /*edm::Handle<SiPixelRecHitCollection> pixelCollection;
   iEvent.getByToken(pixelToken, pixelCollection);    
 
   nPixel = pixelCollection->size();
-  */
+*/
   // Processing HLT results
   
   //HLTConfigProvider const&  hltCfg = hltPrescaleProvider.hltConfigProvider();
@@ -354,15 +331,6 @@ void newZDCAnalyzer::beginJob(){
 
   zdcDigiTree->Branch("nTrack",&nTrack,"nTrack/I");
   zdcDigiTree->Branch("nPixel",&nPixel,"nPixel/I");
-
-  //branches with phi eta and Pt values
-  zdcDigiTree->Branch("phi", &phi[0], "phi[nTrack]/D");
-  zdcDigiTree->Branch("eta", &eta[0], "eta[nTrack]/D");
-  zdcDigiTree->Branch("Pt",  &Pt[0], "Pt[nTrack]/D");
-
-  zdcDigiTree->Branch("phi", "std::vector<double>", &phi);
-  zdcDigiTree->Branch("eta", "std::vector<double>", &eta);
-  zdcDigiTree->Branch("Pt",  "std::vector<double>", &Pt);
 
   firstEvent = true;
 
