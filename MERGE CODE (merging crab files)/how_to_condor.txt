@@ -1,0 +1,11 @@
+HOW TO CONDOR
+
+condor_submit condor_hadd_merge.jdl
+
+condor_status -constraint "RemoteUser == ebadams@hepcms.umd.edu"
+
+condor_status -submitters
+
+ du -h PbPb2018_AOD_MinBias2_326776_RPDZDC_merged.root
+
+ mv PbPb2018_AOD_MinBias2_326776_RPDZDC_merged.root ~/Merged_Root_Files_PbPb2018/MB_2/326776/

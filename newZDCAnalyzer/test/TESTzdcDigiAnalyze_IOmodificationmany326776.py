@@ -34,8 +34,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1
 process.TFileService = cms.Service("TFileService",fileName=cms.string("TESTAOD_zdc_digi_tree_326776_many_4.root"))
 
 process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/3A1EC40E-36FD-BB4F-A91B-C2FD9D25EF19.root', #
-#'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00001/5FD35878-B1F3-A04A-A670-B565EA8A22FA.root', #
+#'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/3A1EC40E-36FD-BB4F-A91B-C2FD9D25EF19.root', #
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00001/5FD35878-B1F3-A04A-A670-B565EA8A22FA.root', #
 #'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/48FBF6FF-E20A-454F-AA2C-3FFE92779C98.root', #
 #'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/740605C2-53E6-1449-BD5D-316AA19ED709.root', #
 #'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/A5EAE707-CBC5-6944-8759-481545CE1642.root', #
