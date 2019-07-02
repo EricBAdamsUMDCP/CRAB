@@ -356,10 +356,6 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("nPixel",&nPixel,"nPixel/I");
 
   //branches with phi eta and Pt values
-  zdcDigiTree->Branch("phi", &phi[0], "phi[nTrack]/D");
-  zdcDigiTree->Branch("eta", &eta[0], "eta[nTrack]/D");
-  zdcDigiTree->Branch("Pt",  &Pt[0], "Pt[nTrack]/D");
-
   zdcDigiTree->Branch("phi", "std::vector<double>", &phi);
   zdcDigiTree->Branch("eta", "std::vector<double>", &eta);
   zdcDigiTree->Branch("Pt",  "std::vector<double>", &Pt);
