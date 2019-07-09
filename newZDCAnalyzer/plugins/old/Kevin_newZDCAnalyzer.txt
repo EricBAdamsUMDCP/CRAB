@@ -11,8 +11,8 @@
      [Notes on implementation]
 */
 //
-// Sourced from Oliver Suranyi, Thank you!
-//  Edited by Eric Adams wih the Assitance of Colin Champney
+// Original Author:  Oliver Suranyi
+//         Created:  Sat, 03 Nov 2018 14:24:57 GMT
 //
 //
 
@@ -43,8 +43,6 @@
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "DataFormats/HcalRecHit/interface/HFRecHit.h"
 #include "DataFormats/HcalDigi/interface/HcalDigiCollections.h"
-#include "DataFormats/HeavyIonEvent/interface/Centrality.h" //EBA
-#include "CondFormats/HIObjects/interface/CentralityTable.h" //EBA dont know if file location will work
 
 #include "DataFormats/CaloTowers/interface/CaloTower.h"
 #include "DataFormats/CaloTowers/interface/CaloTowerCollection.h"
@@ -112,12 +110,6 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<edm::TriggerResults> hltToken;
     edm::EDGetTokenT<reco::TrackCollection> trackToken;
     //edm::EDGetTokenT<SiPixelRecHitCollection> pixelToken;
-    ///EBA adding centrality
-    edm::InputTag centralityTag_;
-    edm::EDGetTokenT<reco::Centrality> centralityToken;
-    edm::Handle<reco::Centrality> centrality_; //EBA token
-
-// REMEBER TO MODIFY .XML THIS IS LIKELY WHY UPDATING THE ANALYZER AND A CONTINUATION OF CRASHES IS OCCURING!!
 
     TTree* zdcDigiTree;
     int run, lumi, event, bxid;
@@ -133,7 +125,6 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
     int rejected;
 
-    double centval; //EBA variable to store values
     int nPixel;
     int nTrack;
     int nHF_pos, nHF_neg;
@@ -161,10 +152,6 @@ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
 
   trackToken = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("track"));
   //pixelToken = consumes<SiPixelRecHitCollection>(iConfig.getParameter<edm::InputTag>("pixel"));
-  centralityTag_ = iConfig.getParameter<edm::InputTag>("centralityTag_"); //EBA got config
-  centralityToken = consumes<reco::Centrality>(centralityTag_); //EBA obtain token for centrality info referenced in config file
-
-
 
   phi = nullptr;
   eta = nullptr;
@@ -298,17 +285,12 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   delete Pt; Pt = new std::vector<double>();
 
   //populate track vectors
-  for (reco::TrackCollection::const_iterator track_iter = trackCollection->begin(); //dereferencing edm::Handles (using * or ->) gets object that handle refers to
+  for (reco::TrackCollection::const_iterator track_iter = trackCollection->begin();
                           track_iter != trackCollection->end(); ++track_iter) {
     phi->push_back(track_iter->phi());
     eta->push_back(track_iter->eta());
     Pt->push_back(track_iter->pt());
-  }
-
-  // Processing centrality   // EBA added
-  iEvent.getByToken(centralityToken, centrality_); //obtain centrality object from input via token and pass to centralityHandle
-  centval = centrality_->EtHFtowerSum(); //obtain EtHFtowerSum from object as centrality value //EBA this is HI HF
-
+  }  
 
   // Processing pixels
   /*edm::Handle<SiPixelRecHitCollection> pixelCollection;
@@ -356,8 +338,6 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("lumi",&lumi,"lumi/I");
   zdcDigiTree->Branch("event",&event,"event/I");
   zdcDigiTree->Branch("bxid",&bxid,"bxid/I");
-
-  zdcDigiTree->Branch("Cent",&centval,"cent/D"); //EBA
 
   zdcDigiTree->Branch("n",&n,"n/I");
   zdcDigiTree->Branch("zside",zside,"zside[n]/I");

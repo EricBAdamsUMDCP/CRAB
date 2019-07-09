@@ -117,7 +117,6 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::Centrality> centralityToken;
     edm::Handle<reco::Centrality> centrality_; //EBA token
 
-// REMEBER TO MODIFY .XML THIS IS LIKELY WHY UPDATING THE ANALYZER AND A CONTINUATION OF CRASHES IS OCCURING!!
 
     TTree* zdcDigiTree;
     int run, lumi, event, bxid;
@@ -307,7 +306,7 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   // Processing centrality   // EBA added
   iEvent.getByToken(centralityToken, centrality_); //obtain centrality object from input via token and pass to centralityHandle
-  centval = centrality_->EtHFtowerSum(); //obtain EtHFtowerSum from object as centrality value //EBA this is HI HF
+  centval = centrality_->Ntracks(); //obtain EtHFtowerSum from object as centrality value
 
 
   // Processing pixels

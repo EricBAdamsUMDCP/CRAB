@@ -31,28 +31,31 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
-process.TFileService = cms.Service("TFileService",fileName=cms.string("CentralityMaybeAOD_zdc_digi_tree_326776_Colin1.root"))
+process.TFileService = cms.Service("TFileService",fileName=cms.string("Tracks_AOD_zdc_digi_tree_326822.root"))
 
 process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/3A1EC40E-36FD-BB4F-A91B-C2FD9D25EF19.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00001/5FD35878-B1F3-A04A-A670-B565EA8A22FA.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/48FBF6FF-E20A-454F-AA2C-3FFE92779C98.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/48FBF6FF-E20A-454F-AA2C-3FFE92779C98.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/740605C2-53E6-1449-BD5D-316AA19ED709.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/A5EAE707-CBC5-6944-8759-481545CE1642.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/A483214B-3072-C945-9CFA-BA7E9B301A7A.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/A1C2454A-3689-9245-856D-B60E96DFA150.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/4AB02FCB-D990-4F4B-98AE-9B97E69C39BE.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/4214D3BF-16DA-0343-9F18-F283E956CE13.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/67BE2C2F-2855-7542-B283-8F0DAFCB8DF8.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/B4ACB81A-9E47-004E-9FAD-A77D43B52209.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/C86FDE72-B72D-894A-B55F-D1B5F8786A38.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/92DF7F58-F169-1F4E-925F-D040B3A1F68A.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/9E19B19C-5900-CD4F-8A20-9815AC9135DB.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/40DBA3FF-EF2B-7741-99C3-B842A5F710D3.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/81DF578E-65DC-1C4C-BA5A-7817E2DF0354.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00001/62FE2540-FF9A-D145-9D7B-CF6E852849C0.root', #
-'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/A5CAF0C7-A029-1B4F-B8C5-AAC1B9CC9B0C.root' #
+#326822
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/8294A9BC-7CB1-FA45-8568-2F62CE79360B.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/4DD92603-0B45-9143-A01B-73B5BDAF8F85.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/D64B26D5-6170-AC43-A917-034494E7794D.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00001/03DF21C3-36E9-884C-A2E1-17F9ED4853C8.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/69678A7F-2D04-5E47-821D-BCF71AAA7D1B.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/36AA7ECD-9DBC-3D44-B7B8-4F9C99F420F9.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/472D1FD8-0E9A-B949-AD5F-40C463709DAC.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/2CCC82EE-AB7A-AF4B-9E92-E0192FA5D7DB.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/3871C78A-48C5-8B46-959B-A74FC5B95312.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/6E2BB3E3-F91A-D042-99E0-56DD2F648505.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00001/EBFF4835-2252-3545-94CB-9E517D53E71D.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00001/55181AFE-0FBD-E649-B904-65516AE205C2.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/6974A463-2A78-C645-9362-4BFA9BC5CB4C.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00001/8209576F-DACD-644C-B31C-34AF8BB734E0.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/D06DD85A-E57E-AC49-B24E-E88B3753B95D.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/3F7F1D97-DA3D-FA4B-B040-2797050E2446.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/58530F71-260F-224A-88D1-74BECB770554.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/4A14D9A4-92C0-EB40-9411-7AED058B068E.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/0E915DAA-0A67-BD40-8595-16EFDCDB2374.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00000/86245C15-149D-4540-867C-F4CD57EE4948.root',
+'/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/822/00001/A2772529-ED35-D343-BCCF-3163C909A5A6.root'
 ))
 #process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/42FDBB3F-421D-1A40-9D5F-DA88DAF86B4A.root'))
 #process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring('file:test_reco_py_RAW2DIGI_RECO.root'))

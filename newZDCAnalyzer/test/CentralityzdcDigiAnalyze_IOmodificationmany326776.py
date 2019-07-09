@@ -31,7 +31,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
-process.TFileService = cms.Service("TFileService",fileName=cms.string("CentralityMaybeAOD_zdc_digi_tree_326776_Colin1.root"))
+process.TFileService = cms.Service("TFileService",fileName=cms.string("CentralityMaybeAOD_zdc_digi_tree_326776_Eric.root"))
 
 process.source = cms.Source ("PoolSource",fileNames = cms.untracked.vstring(
 '/store/hidata/HIRun2018A/HIMinimumBias2/AOD/PromptReco-v1/000/326/776/00000/3A1EC40E-36FD-BB4F-A91B-C2FD9D25EF19.root', #

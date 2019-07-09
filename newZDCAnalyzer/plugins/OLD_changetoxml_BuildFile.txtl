@@ -17,7 +17,5 @@
 <use name="RecoLocalCalo/HcalRecAlgos"/>
 <use name="HLTrigger/HLTcore"/>
 
-<use name="DataFormats/HeavyIonEvent"/> <!-- EBA ADDED-->
-<use name="RecoHI/HiCentralityAlgos"/> <!-- EBA ADDED-->
-<!-- EBA ADDED FROM <use name="RecoHI/HiCentralityAlgos"/><use name="RecoHI/HiCentralityAlgos"/>>
+
 <flags EDM_PLUGIN="1"/>
