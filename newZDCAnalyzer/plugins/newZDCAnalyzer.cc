@@ -119,6 +119,8 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 // REMEBER TO MODIFY .XML THIS IS LIKELY WHY UPDATING THE ANALYZER AND A CONTINUATION OF CRASHES IS OCCURING!!
 
+   // https://github.com/ssanders50/PbPb_2018/blob/5628f011b98cb4b51767668558ee7cadd9a307a5/CMSSW_10_3_2/src/HeavyIonsAnalysis/EventAnalysis/src/HiEvtAnalyzer.cc useful 
+
     TTree* zdcDigiTree;
     int run, lumi, event, bxid;
    
