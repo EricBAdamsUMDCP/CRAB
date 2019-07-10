@@ -149,6 +149,7 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     std::vector<double>* phi;
     std::vector<double>* eta;
     std::vector<double>* Pt;
+    std::vector<double>* chi2;
 };
 
 newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
@@ -171,6 +172,7 @@ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
   phi = nullptr;
   eta = nullptr;
   Pt = nullptr;
+  chi2 = nullptr;
 }
 
 
@@ -298,6 +300,7 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   delete phi; phi = new std::vector<double>();
   delete eta; eta = new std::vector<double>();
   delete Pt; Pt = new std::vector<double>();
+  delete chi2; chi2 = new std::vector<double>();
 
   //populate track vectors
   for (reco::TrackCollection::const_iterator track_iter = trackCollection->begin(); //dereferencing edm::Handles (using * or ->) gets object that handle refers to
@@ -305,6 +308,8 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     phi->push_back(track_iter->phi());
     eta->push_back(track_iter->eta());
     Pt->push_back(track_iter->pt());
+    chi2->push_back(track_iter->chi2());
+
   }
 
   // Processing centrality   // EBA added
@@ -359,7 +364,7 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("event",&event,"event/I");
   zdcDigiTree->Branch("bxid",&bxid,"bxid/I");
 
-  zdcDigiTree->Branch("Cent",&centval,"cent/D"); //EBA
+  zdcDigiTree->Branch("Cent",&centval,"cent/D"); //EBA //this is acutally hf tower hits which a table is needed to convert to centrality
 
   zdcDigiTree->Branch("n",&n,"n/I");
   zdcDigiTree->Branch("zside",zside,"zside[n]/I");
@@ -381,6 +386,8 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("phi", "std::vector<double>", &phi);
   zdcDigiTree->Branch("eta", "std::vector<double>", &eta);
   zdcDigiTree->Branch("Pt",  "std::vector<double>", &Pt);
+  zdcDigiTree->Branch("chi2",  "std::vector<double>", &chi2);
+
 
   firstEvent = true;
 
