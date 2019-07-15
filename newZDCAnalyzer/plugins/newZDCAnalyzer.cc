@@ -12,7 +12,9 @@
 */
 //
 // Sourced from Oliver Suranyi, Thank you!
-//  Edited by Eric Adams wih the Assitance of Colin Champney
+//parts butchered from Will McBrayer's analyzer
+//And some ideas from Jaime Gomez's analyzer
+//  Edited & written by Eric Adams wih the Assitance of Colin Champney
 //
 //
 
@@ -31,6 +33,9 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
+
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h" //eba added
 
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiPixelRecHitCollection.h"
@@ -77,6 +82,8 @@
 
 #include "FWCore/Utilities/interface/InputTag.h"
 
+#include "Math/Vector3D.h" //eba added
+
 #include "TTree.h"
 
 #include "nominal_fC.h"
@@ -84,6 +91,7 @@
 //
 // class declaration
 //
+
 
 const int MAX = 50000;
 const int MAX_TS = 10;
@@ -101,6 +109,10 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
     virtual void endJob() override;
 
+    bool TrackQuality_HIReco(const reco::TrackCollection::const_iterator& itTrack, const reco::VertexCollection&);
+                                                                                    //may add back in coonst
+
+
     // ----------member data ---------------------------
     //HLTPrescaleProvider hltPrescaleProvider_;
     string trgResultsProcess_;
@@ -116,6 +128,11 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::InputTag centralityTag_;
     edm::EDGetTokenT<reco::Centrality> centralityToken;
     edm::Handle<reco::Centrality> centrality_; //EBA token
+
+    edm::InputTag vertexTag_;
+    edm::EDGetTokenT<std::vector<reco::Vertex>> vertexToken; //EBA added
+    edm::Handle<std::vector<reco::Vertex>> vertex_;
+
 
 // REMEBER TO MODIFY .XML THIS IS LIKELY WHY UPDATING THE ANALYZER AND A CONTINUATION OF CRASHES IS OCCURING!!
 
@@ -133,13 +150,17 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     float nfC[MAX_TS][MAX];
     float rfC[MAX_TS][MAX];
 
-    int rejected;
+    int rejected = 0;
 
-    double centval; //EBA variable to store values
-    int nPixel;
-    int nTrack;
-    int nHF_pos, nHF_neg;
-    float eHF_pos, eHF_neg;
+    double centval = 0; //EBA variable to store values
+    int nPixel = 0;
+    int nTrack = 0;
+    const int primaryvtx = 0;
+    int nRejectedTracks = 0;
+    int nAcceptedTracks = 0;
+    int nHF_pos = 0, nHF_neg = 0;
+    float eHF_pos = 0, eHF_neg = 0;
+    double vtx = 0;
 
     bool firstEvent;
     int* trigflag;
@@ -167,6 +188,8 @@ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
   centralityTag_ = iConfig.getParameter<edm::InputTag>("centralityTag_"); //EBA got config
   centralityToken = consumes<reco::Centrality>(centralityTag_); //EBA obtain token for centrality info referenced in config file
 
+  vertexTag_  = iConfig.getParameter<edm::InputTag>("vertexTag_"); //eba added for track based cuts
+  vertexToken = consumes<std::vector<reco::Vertex>>(vertexTag_);
 
 
   phi = nullptr;
@@ -288,29 +311,56 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
   }
 
+//vertex checking
+  //may need to move handle
+
+  iEvent.getByToken(vertexToken,vertex_);
+  reco::VertexCollection recoVertices = *vertex_;
+  sort(recoVertices.begin(), recoVertices.end(), [](const reco::Vertex &a, const reco::Vertex &b){
+  return a.tracksSize() > b.tracksSize();
+  });
+  vtx = recoVertices[primaryvtx].z(); //may need to add reco::
+
+  //hvtxRaw->Fill(vtx);
+
+  bool vertex_good = true;
+  if (fabs(vtx) < -15. || fabs(vtx) > 15.) {
+    vertex_good = false;
+  } 
+
   // Processing tracks
-  edm::Handle<reco::TrackCollection> trackCollection;
-  iEvent.getByToken(trackToken, trackCollection);
+  if (vertex_good){
+    edm::Handle<reco::TrackCollection> trackCollection;
+    iEvent.getByToken(trackToken, trackCollection);
 
-  nTrack = trackCollection->size();
+    nTrack = trackCollection->size();
 
 
-  //// extract phi, eta, and Pt values from tracks ////
-  //clear track vectors
-  delete phi; phi = new std::vector<double>();
-  delete eta; eta = new std::vector<double>();
-  delete Pt; Pt = new std::vector<double>();
-  delete chi2; chi2 = new std::vector<double>();
+    //// extract phi, eta, and Pt values from tracks ////
+    //clear track vectors
+    delete phi; phi = new std::vector<double>();
+    delete eta; eta = new std::vector<double>();
+    delete Pt; Pt = new std::vector<double>();
+    delete chi2; chi2 = new std::vector<double>();
 
-  //populate track vectors
-  for (reco::TrackCollection::const_iterator track_iter = trackCollection->begin(); //dereferencing edm::Handles (using * or ->) gets object that handle refers to
-                          track_iter != trackCollection->end(); ++track_iter) {
-    phi->push_back(track_iter->phi());
-    eta->push_back(track_iter->eta());
-    Pt->push_back(track_iter->pt());
-    chi2->push_back(track_iter->chi2());
 
-  }
+    for (reco::TrackCollection::const_iterator track_iter = trackCollection->begin(); //dereferencing edm::Handles (using * or ->) gets object that handle refers to
+                            track_iter != trackCollection->end(); ++track_iter) {
+  //subtract bad track values from ntrack to get acceptedntrack
+
+
+//  QUESTIONS ABOUT THE NOT STAEMENT DOUBLE CHECK THAT
+      if ( ! TrackQuality_HIReco(track_iter, recoVertices) ) continue; // checks to make sure tracks a koality
+        // needs work still to make sure function work
+        nAcceptedTracks = nTrack - nRejectedTracks;
+        phi->push_back(track_iter->phi());
+        eta->push_back(track_iter->eta());
+        Pt->push_back(track_iter->pt());
+
+        //AD ERROR IN PH IETA AND PT?
+        chi2->push_back(track_iter->chi2());
+    }
+  } //extraneous brakcet?
 
   // Processing centrality   // EBA added
   iEvent.getByToken(centralityToken, centrality_); //obtain centrality object from input via token and pass to centralityHandle
@@ -380,13 +430,15 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("eHF_neg",&eHF_neg,"eHF_neg/F");
 
   zdcDigiTree->Branch("nTrack",&nTrack,"nTrack/I");
+  zdcDigiTree->Branch("nAcceptedTracks",&nAcceptedTracks,"nAcceptedTracks/I"); //allows for iteration over tracks due to some track rejection
+
   zdcDigiTree->Branch("nPixel",&nPixel,"nPixel/I");
 
   //branches with phi eta and Pt values
   zdcDigiTree->Branch("phi", "std::vector<double>", &phi);
   zdcDigiTree->Branch("eta", "std::vector<double>", &eta);
   zdcDigiTree->Branch("Pt",  "std::vector<double>", &Pt);
-  zdcDigiTree->Branch("chi2",  "std::vector<double>", &chi2);
+  zdcDigiTree->Branch("chi2", "std::vector<double>", &chi2);
 
 
   firstEvent = true;
@@ -416,5 +468,46 @@ newZDCAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //descriptions.addDefault(desc);
 }
 
+///
+bool //note this is likely missing a header or 2 but they are in vn analyzer
+newZDCAnalyzer::TrackQuality_HIReco(const reco::TrackCollection::const_iterator& itTrack, const reco::VertexCollection& recoVertices)
+{                                                                                           // may add back in const 
+  if ( itTrack->charge() == 0 ) return false;
+  if ( !itTrack->quality(reco::TrackBase::highPurity) ) return false;
+  if ( itTrack->numberOfValidHits() < 11 ) return false;
+  if ( itTrack->normalizedChi2() / itTrack->hitPattern().trackerLayersWithMeasurement() > 0.15 ) {
+    return false;
+  }
+  if ( itTrack->ptError()/itTrack->pt() > 0.1 ) { //max pt error set to 10 %. may want to change to be more aggressive, jaimes number is 0.01
+    return false;
+  }
+  if (
+      itTrack->originalAlgo() != 4 and
+      itTrack->originalAlgo() != 5 and
+      itTrack->originalAlgo() != 6 and
+      itTrack->originalAlgo() != 7
+      ) {
+    return false;
+  }
+  
+  math::XYZPoint v1( recoVertices[primaryvtx].position().x(), recoVertices[primaryvtx].position().y(), recoVertices[primaryvtx].position().z() );
+  double vxError = recoVertices[primaryvtx].xError();
+  double vyError = recoVertices[primaryvtx].yError();
+  double vzError = recoVertices[primaryvtx].zError();
+  double d0 = -1.* itTrack->dxy(v1);
+  double derror=sqrt(itTrack->dxyError()*itTrack->dxyError()+vxError*vyError);
+  if ( fabs( d0/derror ) > 3.0 ) { // max d0d0 error set to 3.0
+    return false;
+  }
+  
+  double dz=itTrack->dz(v1);
+  double dzerror=sqrt(itTrack->dzError()*itTrack->dzError()+vzError*vzError);
+  if ( fabs( dz/dzerror ) > 3.0 ) { // max dzdz error is set to 3.0
+    return false;
+  }
+  return true;
+}
+
 //define this as a plug-in
 DEFINE_FWK_MODULE(newZDCAnalyzer);
+
