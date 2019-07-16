@@ -168,8 +168,11 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     //HLTPrescaleProvider hltPrescaleProvider;
 
     std::vector<double>* phi;
+    std::vector<double>* phiError;
     std::vector<double>* eta;
+    std::vector<double>* etaError;
     std::vector<double>* Pt;
+    std::vector<double>* ptError;
     std::vector<double>* chi2;
 };
 
@@ -193,8 +196,11 @@ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
 
 
   phi = nullptr;
+  phiError = nullptr;
   eta = nullptr;
+  etaError = nullptr;
   Pt = nullptr;
+  ptError = nullptr;
   chi2 = nullptr;
 }
 
@@ -328,6 +334,8 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     vertex_good = false;
   } 
 
+   nRejectedTracks = 0;
+   nAcceptedTracks = 0;
   // Processing tracks
   if (vertex_good){
     edm::Handle<reco::TrackCollection> trackCollection;
@@ -335,12 +343,14 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
     nTrack = trackCollection->size();
 
-
     //// extract phi, eta, and Pt values from tracks ////
     //clear track vectors
     delete phi; phi = new std::vector<double>();
+    delete phiError; phiError = new std::vector<double>();
     delete eta; eta = new std::vector<double>();
+    delete etaError; etaError = new std::vector<double>();
     delete Pt; Pt = new std::vector<double>();
+    delete ptError; ptError = new std::vector<double>();
     delete chi2; chi2 = new std::vector<double>();
 
 
@@ -350,18 +360,27 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 
 //  QUESTIONS ABOUT THE NOT STAEMENT DOUBLE CHECK THAT
-      if ( ! TrackQuality_HIReco(track_iter, recoVertices) ) continue; // checks to make sure tracks a koality
+      if ( ! TrackQuality_HIReco(track_iter, recoVertices) ){
+      //nRejectedTracks++;
+      continue;
+      }
+      // checks to make sure tracks a koality
         // needs work still to make sure function work
-        nAcceptedTracks = nTrack - nRejectedTracks;
+        nAcceptedTracks += 1;
+
         phi->push_back(track_iter->phi());
+        phiError->push_back(track_iter->phiError());
         eta->push_back(track_iter->eta());
+        etaError->push_back(track_iter->etaError());
         Pt->push_back(track_iter->pt());
+        ptError->push_back(track_iter->ptError());
 
         //AD ERROR IN PH IETA AND PT?
         chi2->push_back(track_iter->chi2());
     }
   } //extraneous brakcet?
 
+  //nAcceptedTracks = nTrack - nRejectedTracks;
   // Processing centrality   // EBA added
   iEvent.getByToken(centralityToken, centrality_); //obtain centrality object from input via token and pass to centralityHandle
   centval = centrality_->EtHFtowerSum(); //obtain EtHFtowerSum from object as centrality value //EBA this is HI HF
@@ -436,8 +455,11 @@ void newZDCAnalyzer::beginJob(){
 
   //branches with phi eta and Pt values
   zdcDigiTree->Branch("phi", "std::vector<double>", &phi);
+  zdcDigiTree->Branch("phiError", "std::vector<double>", &phiError);
   zdcDigiTree->Branch("eta", "std::vector<double>", &eta);
+  zdcDigiTree->Branch("etaError", "std::vector<double>", &etaError);
   zdcDigiTree->Branch("Pt",  "std::vector<double>", &Pt);
+  zdcDigiTree->Branch("ptError",  "std::vector<double>", &ptError);
   zdcDigiTree->Branch("chi2", "std::vector<double>", &chi2);
 
 
