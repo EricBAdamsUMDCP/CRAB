@@ -13,10 +13,10 @@ config.section_('JobType')
 config.JobType.outputFiles = ['rereco_PbPb2018_AOD_MinBias2_327327_RPDZDC.root']
 config.JobType.pyCfgParams = ['noprint']
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'rerecoForCRABpythonfileforModernProduction.py' #MUST BE IN SAME FOLER OR GIVE FULL PATH
+config.JobType.psetName = 'rerecoForCRABpythonfileforModernProduction_327327.py' #MUST BE IN SAME FOLER OR GIVE FULL PATH
 config.Data.inputDataset = '/HIMinimumBias2/HIRun2018A-04Apr2019-v1/AOD' 
-config.Data.splitting = 'FileBased' #LumiBased
-config.Data.unitsPerJob = 20 #20
+config.Data.splitting = 'Automatic' #'FileBased' #LumiBased
+config.Data.unitsPerJob = 183 #20
 config.Data.publication = False
 lumi_mask='Cert_326381-327564_HI_PromptReco_Collisions18_JSON.txt' #include this in the same directory as the crab submit
 config.Data.outLFNDirBase = '/store/user/eadams' #I believe this is correct

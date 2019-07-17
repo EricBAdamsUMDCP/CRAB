@@ -13,7 +13,7 @@ config.section_('JobType')
 config.JobType.outputFiles = ['rereco_PbPb2018_AOD_MinBias2_326943_RPDZDC.root']
 config.JobType.pyCfgParams = ['noprint']
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'rerecoForCRABpythonfileforModernProduction.py' #MUST BE IN SAME FOLER OR GIVE FULL PATH
+config.JobType.psetName = 'rerecoForCRABpythonfileforModernProduction_326943.py' #MUST BE IN SAME FOLER OR GIVE FULL PATH
 config.Data.inputDataset = '/HIMinimumBias2/HIRun2018A-04Apr2019-v1/AOD' 
 config.Data.splitting =  'Automatic' #'FileBased' #LumiBased
 config.Data.unitsPerJob = 182 #20
