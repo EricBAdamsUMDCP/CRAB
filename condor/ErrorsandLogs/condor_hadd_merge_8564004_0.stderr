@@ -1,0 +1,3 @@
+Error in <TFile::TFile>: file /home/ebadams/PbPb2018_CMS_DATA_MB2/HIMinimumBias2/crab_rereco_PbPb2018_AOD_MinBias2_326943_ZDC/0000/rereco_PbPb2018_AOD_MinBias2_326943_RPDZDC_32.root does not exist
+Error in <TFileMerger::AddFile>: cannot open file /home/ebadams/PbPb2018_CMS_DATA_MB2/HIMinimumBias2/crab_rereco_PbPb2018_AOD_MinBias2_326943_ZDC/0000/rereco_PbPb2018_AOD_MinBias2_326943_RPDZDC_32.root
+hadd exiting due to error in /home/ebadams/PbPb2018_CMS_DATA_MB2/HIMinimumBias2/crab_rereco_PbPb2018_AOD_MinBias2_326943_ZDC/0000/rereco_PbPb2018_AOD_MinBias2_326943_RPDZDC_32.root

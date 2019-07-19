@@ -1,0 +1,9 @@
+universe = vanilla
+Executable = condor_hadd_merge.sh
+getenv = True
+Should_Transfer_Files = NO
+Requirements = TARGET.FileSystemDomain == "privnet"
+Error = /home/ebadams/condor_hadd_merge_$(Cluster)_$(Process).stderr
+Log = /home/ebadams/condor_hadd_merge_$(Cluster)_$(Process).log
+notification = never
+Queue

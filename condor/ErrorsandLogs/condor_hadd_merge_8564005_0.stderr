@@ -1,0 +1,4 @@
+Error in <TFile::TFile>: file /home/ebadams/Merged_Root_Files_PbPb2018/MB_2/326943/rereco_PbPb2018_AOD_MinBias2_326943_ZDCandTracks_merged.root already exists
+Error in <TFileMerger::OutputFile>: cannot open the MERGER output file 
+hadd error opening target file (does /home/ebadams/Merged_Root_Files_PbPb2018/MB_2/326943/rereco_PbPb2018_AOD_MinBias2_326943_ZDCandTracks_merged.root exist?).
+Pass "-f" argument to force re-creation of output file.
