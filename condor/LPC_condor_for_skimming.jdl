@@ -1,0 +1,12 @@
+universe = vanilla
+plusone = $(Process) + 1
+NewProcess = $INT(plusone, %d)
+Executable = LPC_condor_for_skimming$(NewProcess).sh
+Output = good1EOS.out
+Error = good1EOS.err
+Log = good1EOS.log
+transfer_input_files = good$(NewProcess).C
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT
+x509userproxy = $ENV(X509_USER_PROXY)
+queue #ofrootfilestoprocesswhichis=NewProcess

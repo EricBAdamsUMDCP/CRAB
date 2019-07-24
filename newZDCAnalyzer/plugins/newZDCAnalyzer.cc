@@ -448,6 +448,8 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("eHF_pos",&eHF_pos,"eHF_pos/F");
   zdcDigiTree->Branch("eHF_neg",&eHF_neg,"eHF_neg/F");
 
+  zdcDigiTree->Branch("vtx",&vtx,"vtx/D");
+
   zdcDigiTree->Branch("nTrack",&nTrack,"nTrack/I");
   zdcDigiTree->Branch("nAcceptedTracks",&nAcceptedTracks,"nAcceptedTracks/I"); //allows for iteration over tracks due to some track rejection
 
