@@ -161,6 +161,10 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     int nHF_pos = 0, nHF_neg = 0;
     float eHF_pos = 0, eHF_neg = 0;
     double vtx = 0;
+    double xvtx = 0;
+    double yvtx = 0;
+    //double xvtxError = 0;
+   // double yvtxError = 0;
 
     bool firstEvent;
     int* trigflag;
@@ -174,6 +178,18 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     std::vector<double>* Pt;
     std::vector<double>* ptError;
     std::vector<double>* chi2;
+
+    std::vector<double>* HFPos_Phi;
+    std::vector<double>* HFPos_Eta;
+    std::vector<double>* HFPos_Energy;
+    std::vector<double>* HFPos_Et;
+    std::vector<double>* HFNeg_Phi;
+    std::vector<double>* HFNeg_Eta;
+    std::vector<double>* HFNeg_Energy;
+    std::vector<double>* HFNeg_Et;
+
+
+
 };
 
 newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
@@ -202,7 +218,17 @@ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
   Pt = nullptr;
   ptError = nullptr;
   chi2 = nullptr;
+
+  HFPos_Phi = nullptr;
+  HFPos_Eta = nullptr;
+  HFPos_Energy = nullptr;
+  HFPos_Et = nullptr;
+  HFNeg_Phi = nullptr;
+  HFNeg_Eta = nullptr;
+  HFNeg_Energy = nullptr;
+  HFNeg_Et = nullptr;
 }
+
 
 
 newZDCAnalyzer::~newZDCAnalyzer(){
@@ -297,6 +323,21 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   eHF_pos = 0.0;
   eHF_neg = 0.0;
 
+  // delete HFPos_Phi   ; HFPos_Phi    = new std::vector<double>();
+  // delete HFPos_Eta   ; HFPos_Eta    = new std::vector<double>();
+  // delete HFPos_Energy; HFPos_Energy = new std::vector<double>();
+  // delete HFNeg_Phi   ; HFNeg_Phi    = new std::vector<double>();
+  // delete HFNeg_Eta   ; HFNeg_Eta    = new std::vector<double>();
+  // delete HFNeg_Energy; HFNeg_Energy = new std::vector<double>();
+  HFPos_Phi->clear();
+  HFPos_Eta->clear();
+  HFPos_Energy->clear();
+   HFPos_Et->clear();
+  HFNeg_Phi->clear();
+  HFNeg_Eta->clear();
+  HFNeg_Energy->clear();
+  HFNeg_Et->clear();
+
   for(auto it = towerCollection->begin(); it != towerCollection->end(); it++){
     bool isHF = false;
     for(unsigned int i = 0; i < it->constituentsSize(); i++){
@@ -309,10 +350,18 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
       if(it->eta() > 0){
         nHF_pos++;
         eHF_pos += it->energy();
+        HFPos_Phi->push_back(it->phi());
+        HFPos_Eta->push_back(it->eta());
+        HFPos_Energy->push_back(it->energy());
+        HFPos_Et->push_back(it->et());
       }
       else {
         nHF_neg++;
-        eHF_neg += it->energy();    
+        eHF_neg += it->energy();
+        HFNeg_Phi->push_back(it->phi());
+        HFNeg_Eta->push_back(it->eta());
+        HFNeg_Energy->push_back(it->energy());
+        HFNeg_Et->push_back(it->et());
       }
     }
   }
@@ -326,7 +375,8 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   return a.tracksSize() > b.tracksSize();
   });
   vtx = recoVertices[primaryvtx].z(); //may need to add reco::
-
+  xvtx = recoVertices[primaryvtx].x();
+  yvtx = recoVertices[primaryvtx].y();
   //hvtxRaw->Fill(vtx);
 
   bool vertex_good = true;
@@ -426,6 +476,16 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
 // ------------ method called once each job just before starting event loop  ------------
 void newZDCAnalyzer::beginJob(){
+  HFPos_Phi     = new std::vector<double>;
+  HFPos_Eta     = new std::vector<double>;
+  HFPos_Energy  = new std::vector<double>;
+  HFPos_Et  = new std::vector<double>;
+  HFNeg_Phi     = new std::vector<double>;
+  HFNeg_Eta     = new std::vector<double>;
+  HFNeg_Energy  = new std::vector<double>;
+  HFNeg_Et  = new std::vector<double>;
+
+
   zdcDigiTree = fs->make<TTree>("zdcdigi","v1");
   
   zdcDigiTree->Branch("run",&run,"run/I");
@@ -449,6 +509,8 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("eHF_neg",&eHF_neg,"eHF_neg/F");
 
   zdcDigiTree->Branch("vtx",&vtx,"vtx/D");
+  zdcDigiTree->Branch("xvtx", &xvtx, "xvtx/D");
+  zdcDigiTree->Branch("yvtx", &yvtx, "yvtx/D");
 
   zdcDigiTree->Branch("nTrack",&nTrack,"nTrack/I");
   zdcDigiTree->Branch("nAcceptedTracks",&nAcceptedTracks,"nAcceptedTracks/I"); //allows for iteration over tracks due to some track rejection
@@ -464,6 +526,15 @@ void newZDCAnalyzer::beginJob(){
   zdcDigiTree->Branch("ptError",  "std::vector<double>", &ptError);
   zdcDigiTree->Branch("chi2", "std::vector<double>", &chi2);
 
+  zdcDigiTree->Branch("HFPos_Phi", "std::vector<double>", &HFPos_Phi);
+  zdcDigiTree->Branch("HFPos_Eta", "std::vector<double>", &HFPos_Eta);
+  zdcDigiTree->Branch("HFPos_Energy", "std::vector<double>", &HFPos_Energy);
+  zdcDigiTree->Branch("HFPos_Et", "std::vector<double>", &HFPos_Et);
+  zdcDigiTree->Branch("HFNeg_Phi", "std::vector<double>", &HFNeg_Phi);
+  zdcDigiTree->Branch("HFNeg_Eta", "std::vector<double>", &HFNeg_Eta);
+  zdcDigiTree->Branch("HFNeg_Energy", "std::vector<double>", &HFNeg_Energy);
+  zdcDigiTree->Branch("HFNeg_Et", "std::vector<double>", &HFNeg_Et);
+
 
   firstEvent = true;
 
@@ -473,7 +544,15 @@ void newZDCAnalyzer::beginJob(){
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void newZDCAnalyzer::endJob(){
+void newZDCAnalyzer::endJob() {
+  delete HFPos_Phi;
+  delete HFPos_Eta;
+  delete HFPos_Energy;
+  delete HFPos_Et;
+  delete HFNeg_Phi;
+  delete HFNeg_Eta;
+  delete HFNeg_Energy;
+  delete HFNeg_Et;
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
@@ -499,7 +578,7 @@ newZDCAnalyzer::TrackQuality_HIReco(const reco::TrackCollection::const_iterator&
   if ( itTrack->charge() == 0 ) return false;
   if ( !itTrack->quality(reco::TrackBase::highPurity) ) return false;
   if ( itTrack->numberOfValidHits() < 11 ) return false;
-  if ( itTrack->normalizedChi2() / itTrack->hitPattern().trackerLayersWithMeasurement() > 0.15 ) {
+  if ( itTrack->normalizedChi2() / itTrack->hitPattern().trackerLayersWithMeasurement() > 0.18 ) {
     return false;
   }
   if ( itTrack->ptError()/itTrack->pt() > 0.1 ) { //max pt error set to 10 %. may want to change to be more aggressive, jaimes number is 0.01

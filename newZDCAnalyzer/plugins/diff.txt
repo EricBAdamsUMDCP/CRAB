@@ -1,0 +1,124 @@
+diff --git a/newZDCAnalyzer/plugins/newZDCAnalyzer.cc b/newZDCAnalyzer/plugins/newZDCAnalyzer.cc
+index 88aee90..7bc01be 100644
+--- a/newZDCAnalyzer/plugins/newZDCAnalyzer.cc
++++ b/newZDCAnalyzer/plugins/newZDCAnalyzer.cc
+@@ -161,6 +161,10 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+     int nHF_pos = 0, nHF_neg = 0;
+     float eHF_pos = 0, eHF_neg = 0;
+     double vtx = 0;
++    double xvtx = 0;
++    double yvtx = 0;
++    //double xvtxError = 0;
++   // double yvtxError = 0;
+ 
+     bool firstEvent;
+     int* trigflag;
+@@ -174,6 +178,16 @@ class newZDCAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+     std::vector<double>* Pt;
+     std::vector<double>* ptError;
+     std::vector<double>* chi2;
++
++    std::vector<double>* HFPos_Phi;
++    std::vector<double>* HFPos_Eta;
++    std::vector<double>* HFPos_Energy;
++    std::vector<double>* HFNeg_Phi;
++    std::vector<double>* HFNeg_Eta;
++    std::vector<double>* HFNeg_Energy;
++
++
++
+ };
+ 
+ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
+@@ -202,9 +216,17 @@ newZDCAnalyzer::newZDCAnalyzer(const edm::ParameterSet& iConfig) /*:
+   Pt = nullptr;
+   ptError = nullptr;
+   chi2 = nullptr;
++
++  HFPos_Phi = nullptr;
++  HFPos_Eta = nullptr;
++  HFPos_Energy = nullptr;
++  HFNeg_Phi = nullptr;
++  HFNeg_Eta = nullptr;
++  HFNeg_Energy = nullptr;
+ }
+ 
+ 
++
+ newZDCAnalyzer::~newZDCAnalyzer(){
+ }
+ 
+@@ -297,6 +319,13 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
+   eHF_pos = 0.0;
+   eHF_neg = 0.0;
+ 
++  delete HFPos_Phi   ; HFPos_Phi    = new std::vector<double>();
++  delete HFPos_Eta   ; HFPos_Eta    = new std::vector<double>();
++  delete HFPos_Energy; HFPos_Energy = new std::vector<double>();
++  delete HFNeg_Phi   ; HFNeg_Phi    = new std::vector<double>();
++  delete HFNeg_Eta   ; HFNeg_Eta    = new std::vector<double>();
++  delete HFNeg_Energy; HFNeg_Energy = new std::vector<double>();
++
+   for(auto it = towerCollection->begin(); it != towerCollection->end(); it++){
+     bool isHF = false;
+     for(unsigned int i = 0; i < it->constituentsSize(); i++){
+@@ -309,10 +338,16 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
+       if(it->eta() > 0){
+         nHF_pos++;
+         eHF_pos += it->energy();
++        HFPos_Phi->push_back(it->phi());
++        HFPos_Eta->push_back(it->eta());
++        HFPos_Energy->push_back(it->energy());
+       }
+       else {
+         nHF_neg++;
+-        eHF_neg += it->energy();    
++        eHF_neg += it->energy();
++        HFNeg_Phi->push_back(it->phi());
++        HFNeg_Eta->push_back(it->eta());
++        HFNeg_Energy->push_back(it->energy());
+       }
+     }
+   }
+@@ -326,7 +361,8 @@ void newZDCAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
+   return a.tracksSize() > b.tracksSize();
+   });
+   vtx = recoVertices[primaryvtx].z(); //may need to add reco::
+-
++  xvtx = recoVertices[primaryvtx].x();
++  yvtx = recoVertices[primaryvtx].y();
+   //hvtxRaw->Fill(vtx);
+ 
+   bool vertex_good = true;
+@@ -449,6 +485,8 @@ void newZDCAnalyzer::beginJob(){
+   zdcDigiTree->Branch("eHF_neg",&eHF_neg,"eHF_neg/F");
+ 
+   zdcDigiTree->Branch("vtx",&vtx,"vtx/D");
++  zdcDigiTree->Branch("xvtx", &xvtx, "xvtx/D");
++  zdcDigiTree->Branch("yvtx", &yvtx, "yvtx/D");
+ 
+   zdcDigiTree->Branch("nTrack",&nTrack,"nTrack/I");
+   zdcDigiTree->Branch("nAcceptedTracks",&nAcceptedTracks,"nAcceptedTracks/I"); //allows for iteration over tracks due to some track rejection
+@@ -464,6 +502,13 @@ void newZDCAnalyzer::beginJob(){
+   zdcDigiTree->Branch("ptError",  "std::vector<double>", &ptError);
+   zdcDigiTree->Branch("chi2", "std::vector<double>", &chi2);
+ 
++  zdcDigiTree->Branch("HFPos_Phi", "std::vector<double>", &HFPos_Phi);
++  zdcDigiTree->Branch("HFPos_Eta", "std::vector<double>", &HFPos_Eta);
++  zdcDigiTree->Branch("HFPos_Energy", "std::vector<double>", &HFPos_Energy);
++  zdcDigiTree->Branch("HFNeg_Phi", "std::vector<double>", &HFNeg_Phi);
++  zdcDigiTree->Branch("HFNeg_Eta", "std::vector<double>", &HFNeg_Eta);
++  zdcDigiTree->Branch("HFNeg_Energy", "std::vector<double>", &HFNeg_Energy);
++
+ 
+   firstEvent = true;
+ 
+@@ -499,7 +544,7 @@ newZDCAnalyzer::TrackQuality_HIReco(const reco::TrackCollection::const_iterator&
+   if ( itTrack->charge() == 0 ) return false;
+   if ( !itTrack->quality(reco::TrackBase::highPurity) ) return false;
+   if ( itTrack->numberOfValidHits() < 11 ) return false;
+-  if ( itTrack->normalizedChi2() / itTrack->hitPattern().trackerLayersWithMeasurement() > 0.15 ) {
++  if ( itTrack->normalizedChi2() / itTrack->hitPattern().trackerLayersWithMeasurement() > 0.18 ) {
+     return false;
+   }
+   if ( itTrack->ptError()/itTrack->pt() > 0.1 ) { //max pt error set to 10 %. may want to change to be more aggressive, jaimes number is 0.01
